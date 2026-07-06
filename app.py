@@ -10,19 +10,42 @@ CLASS_NAMES = ["0 - No DR", "1 - Mild", "2 - Moderate", "3 - Severe", "4 - Proli
 
 # --- MODEL LOADING ---
 @st.cache_resource
+import streamlit as st
+import numpy as np
+from tensorflow.keras.models import load_model
+from tensorflow.keras.applications.resnet50 import preprocess_input
+from PIL import Image
+import io
+import os
+import gdown
+
+NUM_CLASSES = 5
+CLASS_NAMES = ["0 - No DR", "1 - Mild", "2 - Moderate", "3 - Severe", "4 - Proliferative"]
+
+# --- MODEL LOADING ---
+@st.cache_resource
 def load_keras_model():
     """
-    Loads the Keras ResNet50 model for Diabetic Retinopathy Classification.
+    Downloads and loads the Keras ResNet50 model.
     """
+    file_path = "Diabetic-Retinopathy-ResNet50-model.h5"
+    file_id = "1pNnNAy_eZxE0GeaS5GfTnYBM2HhUCLP0" # <--- Put your ID here
+    url = f"https://drive.google.com/uc?id={file_id}"
+    
+    # Download the model only if it hasn't been downloaded yet
+    if not os.path.exists(file_path):
+        with st.spinner("Downloading model... This may take a minute on the first run."):
+            gdown.download(url, file_path, quiet=False)
+            
     try:
-        model = load_model("Diabetic-Retinopathy-ResNet50-model.h5")
-    except OSError:
-        st.error("Model file 'Diabetic-Retinopathy-ResNet50-model.h5' not found.")
-        st.stop()
+        model = load_model(file_path)
     except Exception as e:
         st.error(f"Error loading Keras model: {e}")
         st.stop()
+        
     return model
+
+# ... (keep the rest of your preprocess_image and app interface code below) ...
 
 # --- IMAGE PREPROCESSING ---
 def preprocess_image(image_bytes):
