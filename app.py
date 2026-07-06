@@ -4,18 +4,6 @@ from tensorflow.keras.models import load_model
 from tensorflow.keras.applications.resnet50 import preprocess_input
 from PIL import Image
 import io
-
-NUM_CLASSES = 5
-CLASS_NAMES = ["0 - No DR", "1 - Mild", "2 - Moderate", "3 - Severe", "4 - Proliferative"]
-
-# --- MODEL LOADING ---
-@st.cache_resource
-import streamlit as st
-import numpy as np
-from tensorflow.keras.models import load_model
-from tensorflow.keras.applications.resnet50 import preprocess_input
-from PIL import Image
-import io
 import os
 import gdown
 
@@ -25,14 +13,12 @@ CLASS_NAMES = ["0 - No DR", "1 - Mild", "2 - Moderate", "3 - Severe", "4 - Proli
 # --- MODEL LOADING ---
 @st.cache_resource
 def load_keras_model():
-    """
-    Downloads and loads the Keras ResNet50 model.
-    """
     file_path = "Diabetic-Retinopathy-ResNet50-model.h5"
-    file_id = "1pNnNAy_eZxE0GeaS5GfTnYBM2HhUCLP0" # <--- Put your ID here
-    url = f"https://drive.google.com/uc?id={file_id}"
     
-    # Download the model only if it hasn't been downloaded yet
+    # ⚠️ REPLACE THIS WITH YOUR ACTUAL GOOGLE DRIVE FILE ID
+    file_id = "1pNnNAy_eZxE0GeaS5GfTnYBM2HhUCLP0" 
+    url = f"[https://drive.google.com/uc?id=](https://drive.google.com/uc?id=){file_id}"
+    
     if not os.path.exists(file_path):
         with st.spinner("Downloading model... This may take a minute on the first run."):
             gdown.download(url, file_path, quiet=False)
@@ -45,13 +31,8 @@ def load_keras_model():
         
     return model
 
-# ... (keep the rest of your preprocess_image and app interface code below) ...
-
 # --- IMAGE PREPROCESSING ---
 def preprocess_image(image_bytes):
-    """
-    Preprocesses input image for Keras ResNet50.
-    """
     try:
         image = Image.open(io.BytesIO(image_bytes)).convert('RGB')
         image = image.resize((224, 224))
@@ -92,7 +73,6 @@ if uploaded_file is not None:
 
             with col2:
                 st.subheader("Prediction Result")
-                st.success(f"**Diagnosis:** {predicted_class_name}")
-
+                st.write(f"**{predicted_class_name}**")
         except Exception as e:
-            st.error(f"Error during prediction: {e}")
+            st.error(f"Error making prediction: {e}")
