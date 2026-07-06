@@ -12,16 +12,25 @@ CLASS_NAMES = ["0 - No DR", "1 - Mild", "2 - Moderate", "3 - Severe", "4 - Proli
 
 # --- MODEL LOADING ---
 @st.cache_resource
+# --- MODEL LOADING ---
+@st.cache_resource
 def load_keras_model():
     file_path = "Diabetic-Retinopathy-ResNet50-model.h5"
     
     # ⚠️ REPLACE THIS WITH YOUR ACTUAL GOOGLE DRIVE FILE ID
     file_id = "1pNnNAy_eZxE0GeaS5GfTnYBM2HhUCLP0" 
-    url = f"[https://drive.google.com/uc?id=](https://drive.google.com/uc?id=){file_id}"
     
+    # Check if a broken/incomplete file was downloaded previously
+    if os.path.exists(file_path):
+        # If the file is smaller than 10MB, it's an error page, not the model.
+        if os.path.getsize(file_path) < 10000000:
+            os.remove(file_path) # Delete the bad file
+    
+    # Download if the file doesn't exist
     if not os.path.exists(file_path):
-        with st.spinner("Downloading model... This may take a minute on the first run."):
-            gdown.download(url, file_path, quiet=False)
+        with st.spinner("Downloading large model from Google Drive... Please wait."):
+            # Using id= instead of url= helps gdown bypass the virus scan warning
+            gdown.download(id=file_id, output=file_path, quiet=False)
             
     try:
         model = load_model(file_path)
