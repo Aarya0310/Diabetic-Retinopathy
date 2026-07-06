@@ -1,11 +1,10 @@
 streamlit
-tensorflow-cpu
-numpy
+tensorflow-cpu==2.15.0
+numpy==1.26.4
 pillow
-opencv-python
+opencv-python-headless
 matplotlib
 scikit-learn
 scipy
 h5py
-keras
 gdown
